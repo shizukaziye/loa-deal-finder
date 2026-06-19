@@ -94,7 +94,7 @@ details.method p,details.method li{font-size:13px;color:var(--text)}
     <summary>How this works</summary>
     <p><b>Fair price</b> is our robust model: take the last 14 daily average prices, drop the current (live, in-progress) day, drop the highest &amp; lowest couple of completed days, then take a recency-weighted mean of the rest. It tracks real moves but a single buyout spike or troll listing can't sway it.</p>
     <div class='formula'>deal = (spot - fair) / fair          (negative = below fair = a buy)</div>
-    <p><b>What "Liquid" means.</b> The market API has no trade-volume data, so liquidity is inferred: an item shows in the default view only if it's an actual <b>material / honing / fusion / cooking</b> item (engraving recipes, consumables and baubles are hidden), it has a full recent price history, and its spot isn't a blown-out outlier vs. fair (so one troll listing doesn't masquerade as a deal). Raise <b>Min value</b> to hide cheap, low-stakes items, or hit <b>Everything</b> to see all items the API tracks.</p>
+    <p><b>What "Liquid" means.</b> The market API has no trade-volume data, so liquidity is inferred from price behaviour: an item shows in the default view only if it's an actual <b>material / honing / fusion / cooking</b> item (engraving recipes, consumables and baubles are hidden), it has a full recent price history, and its 14-day price is <b>stable rather than wildly spiky</b> — a thin, rarely-traded market swings all over its own average (e.g. a stray 4,000g listing among 1,700s), which is the real tell for junk. Its current spot also can't be a blown-out outlier vs. fair. Raise <b>Min value</b> to hide cheap, low-stakes items, or hit <b>Everything</b> to see all items the API tracks.</p>
     <p><b>Caveats.</b> Prices are a snapshot (auto-refreshed every few hours); the per-unit vs. per-stack convention isn't labelled for every item, but the deal&nbsp;% is unit-independent. Hover a sparkline for the daily values.</p>
   </details>
 
@@ -156,7 +156,9 @@ function rows(){
   const d=DEALS[region]||{}, out=[];
   for(const slug in d){
     const it=d[slug], fair=robust(it.h,2,0.9)||it.s, gap=fair?(it.s-fair)/fair:0;
-    out.push({slug,n:it.n,c:it.c,s:it.s,h:it.h,fair,gap,rel:REL.has(it.c)});
+    const comp=(it.h.length>1?it.h.slice(1):it.h).filter(v=>v>0).sort((a,b)=>a-b);   // completed history, sorted
+    const med=comp.length?comp[comp.length>>1]:1, vol=comp.length?(comp[comp.length-1]-comp[0])/med:0;   // (max-min)/median: thin-market spikiness
+    out.push({slug,n:it.n,c:it.c,s:it.s,h:it.h,fair,gap,vol,rel:REL.has(it.c)});
   }
   return out;
 }
@@ -169,7 +171,7 @@ function render(){
   const minv=Math.max(0,+$('minv').value||0);
   let r=rows();
   if(view==='liquid'){
-    r=r.filter(x=>x.rel && x.h.length>=8 && Math.abs(x.gap)<=2 && x.fair>=minv);
+    r=r.filter(x=>x.rel && x.h.length>=8 && x.fair>=minv && Math.abs(x.gap)<=1.5 && x.vol<=3.5);  // vol gate = price stability; drops thin/spiky (junk) markets
     if(cat!=='all'){const set=CATMAP[cat]||new Set();r=r.filter(x=>set.has(x.c));}
   }
   const k=sortKey;
