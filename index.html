@@ -3,6 +3,13 @@
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <title>Lost Ark Deal Finder</title>
+<meta name='description' content='Lost Ark Deal Finder ranks every auction-house item by how far its current spot price sits below or above a robust 14-day fair price — so you can spot what is cheap to buy right now. NA East &amp; EU Central, with sparklines and filters.'>
+<meta property='og:title' content='Lost Ark Deal Finder'>
+<meta property='og:description' content='Every Lost Ark market item ranked by how far spot sits below or above a robust 14-day fair price. Cheap = a buying deal.'>
+<meta property='og:type' content='website'>
+<meta property='og:url' content='https://shizukaziye.github.io/loa-deal-finder/'>
+<meta name='twitter:card' content='summary'>
+<link rel='icon' href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d1017'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%2366c7ff' stroke-width='2.2'/%3E%3Cpath d='M12 13.5l3-3 3 3' fill='none' stroke='%236ee7a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M20 18.5l-3 3-3-3' fill='none' stroke='%23ff7f7f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <!-- SELF-CONTAINED: all CSS + JS inline, no build, no deps. Deploys to GitHub Pages as-is.
      Ranks every market item by current spot vs a robust 14-day fair price. -->
 <style>
@@ -45,13 +52,22 @@ details.method{margin-top:22px;background:var(--panel);border:1px solid var(--bo
 details.method summary{cursor:pointer;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:700;padding:8px 0}
 details.method p,details.method li{font-size:13px;color:var(--text)}
 .formula{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:"SF Mono",Menlo,monospace;font-size:12px;overflow-x:auto;white-space:pre}
+.xlink{font-size:12px;color:var(--dim);margin:-8px 0 16px}
+.xlink a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent}
+.xlink a:hover{border-bottom-color:var(--accent)}
+.foot{margin-top:30px;padding-top:16px;border-top:1px solid var(--border);font-size:11.5px;line-height:1.7;color:var(--dim);text-align:center}
+.foot a{color:var(--dim);text-decoration:underline;text-underline-offset:2px}
+.foot a:hover{color:var(--accent)}
+.foot .disc{display:block;max-width:560px;margin:6px auto 0;opacity:.8}
 @media(max-width:680px){ .wrap{padding:14px 10px 70px} table{font-size:12px} th,td{padding:6px 7px} h1{font-size:20px} }
+@media(max-width:420px){ .bar{gap:8px 12px;padding:10px} .mbtn{padding:7px 11px} .chip{padding:6px 11px} .ninp{width:72px;padding:6px 7px} }
 </style>
 </head><body>
 <div class='wrap'>
   <div id='sparktip'></div>
   <h1>Lost Ark Deal Finder</h1>
-  <div class='tag'>Every market item ranked by how far its <b>current spot</b> sits below (good) or above (bad) a robust 14-day <b>fair</b> price. Cheap = a buying deal. Defaults to liquid, frequently-traded items.</div>
+  <div class='tag'>Every market item ranked by how far its <b>current spot</b> sits below (good) or above (bad) a robust 14-day <b>fair</b> price. Cheap = a buying deal. Defaults to liquid, frequently traded items.</div>
+  <div class='xlink'>Crafting something? Try the companion <a href='https://shizukaziye.github.io/loa-crafting-calculator/'>Stronghold Crafting Profit Calculator &rarr;</a></div>
 
   <div class='bar'>
     <span class='grp'><span class='lbl'>Region</span>
@@ -76,9 +92,14 @@ details.method p,details.method li{font-size:13px;color:var(--text)}
     <summary>How this works</summary>
     <p><b>Fair price</b> is our robust model: take the last 14 daily average prices, drop the current (live, in-progress) day, drop the highest &amp; lowest couple of completed days, then take a recency-weighted mean of the rest. It tracks real moves but a single buyout spike or troll listing can't sway it.</p>
     <div class='formula'>deal = (spot - fair) / fair          (negative = below fair = a buy)</div>
-    <p><b>What "Liquid" means.</b> The market API has no trade-volume data, so liquidity is inferred: an item shows in the default view only if it's an actual <b>material / honing / fusion / cooking</b> item (engraving recipes, consumables and baubles are hidden), it has a full recent price history, and its spot isn't a blown-out outlier vs fair (so one troll listing doesn't masquerade as a deal). Raise <b>Min value</b> to hide trivial sub-bulk items, or hit <b>Everything</b> to see all items the API tracks.</p>
-    <p><b>Caveats.</b> Prices are a snapshot (auto-refreshed periodically); the per-unit vs per-stack convention isn't labelled for every item, but the deal % is unit-independent. Hover a sparkline for the daily values.</p>
+    <p><b>What "Liquid" means.</b> The market API has no trade-volume data, so liquidity is inferred: an item shows in the default view only if it's an actual <b>material / honing / fusion / cooking</b> item (engraving recipes, consumables and baubles are hidden), it has a full recent price history, and its spot isn't a blown-out outlier vs. fair (so one troll listing doesn't masquerade as a deal). Raise <b>Min value</b> to hide cheap, low-stakes items, or hit <b>Everything</b> to see all items the API tracks.</p>
+    <p><b>Caveats.</b> Prices are a snapshot (auto-refreshed every few hours); the per-unit vs. per-stack convention isn't labelled for every item, but the deal&nbsp;% is unit-independent. Hover a sparkline for the daily values.</p>
   </details>
+
+  <footer class='foot'>
+    Market prices via the community feed used by <b>loa-buddy</b>. &middot; <a href='https://shizukaziye.github.io/loa-crafting-calculator/'>Stronghold Crafting Profit Calculator</a>
+    <span class='disc'>Unofficial, fan-made tool. Not affiliated with Smilegate RPG or Amazon Games. Lost Ark is a trademark of its respective owners.</span>
+  </footer>
 </div>
 
 <script>
@@ -153,9 +174,14 @@ function render(){
   r.sort((a,b)=>{const va=k==='n'?a.n:k==='c'?a.c:a[k],vb=k==='n'?b.n:k==='c'?b.c:b[k];
     return typeof va==='string'?sortDir*va.localeCompare(vb):sortDir*(va-vb);});
   const buys=r.filter(x=>x.gap<=-0.05).length;
-  $('summary').innerHTML=`<b class='accent'>${r.length}</b> ${view==='liquid'?'liquid':'total'} items &middot; <b class='good'>${buys}</b> currently below fair (buys) &middot; region <b>${region.toUpperCase()}</b> &middot; prices as of ${new Date(DEALS_TS*1000).toLocaleDateString()}. Cheapest-vs-fair first.`;
+  const rgName={nae:'NA East',euc:'EU Central'}[region]||region.toUpperCase();
+  $('summary').innerHTML=`<b class='accent'>${r.length}</b> ${view==='liquid'?'liquid':'total'} items &middot; <b class='good'>${buys}</b> currently below fair (buys) &middot; <b>${rgName}</b> &middot; prices as of ${new Date(DEALS_TS*1000).toLocaleDateString()}. Cheapest vs. fair first.`;
   const cols=[['n','Item'],['c','Type'],['fair','Fair',1],['s','Spot',1],['gap','Deal',1],['h','14-day']];
   let h='<tr>'+cols.map(([k,l,n])=>`<th class='${n?'num':''}' onclick='sortBy("${k}")'>${l}${sortKey===k?(sortDir<0?' ▾':' ▴'):''}</th>`).join('')+'</tr>';
+  if(!r.length){
+    h+=`<tr><td colspan='${cols.length}' style='text-align:center;color:var(--dim);padding:26px 10px;white-space:normal'>`
+      +`No items match these filters.<br><span style='font-size:12px'>Try lowering <b>Min value</b>, picking a different <b>Type</b>, or switching to <b>Everything</b>.</span></td></tr>`;
+  }
   for(const x of r){
     const cls=x.gap<=-0.05?'good':x.gap>=0.05?'bad':'dim';
     h+=`<tr><td>${x.n}</td><td><span class='pill ${x.c}'>${TYPE[x.c]||x.c}</span></td>`
