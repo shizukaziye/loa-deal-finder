@@ -15,7 +15,7 @@ shares its fair-price model.
   and a **Min value** filter to hide trivial low-gold items.
 - Sorted **best deal first** (cheapest vs fair); green = below fair (a buy), red = above.
   Click any column to re-sort. Hover a sparkline to read a specific day's price.
-- Settings are remembered locally; mobile-friendly.
+- The page remembers your settings locally; mobile-friendly.
 
 ## Fair price & "liquid"
 
@@ -25,17 +25,17 @@ fair = robust 14-day average  (drop today's live day, drop the top/bottom couple
 deal = (spot - fair) / fair    (negative = below fair = a buy)
 ```
 
-The market API has **no trade-volume data**, so "liquid" is inferred: an item is in the
-default view only if it's a real **material / honing / fusion / cooking** item (engraving
-recipes, consumables, baubles are hidden), it has a full recent price history, and its
-spot isn't a blown-out outlier vs fair (so one troll listing isn't mistaken for a deal).
-The per-unit vs per-stack convention isn't labelled for every item, but the **deal %** is
-unit-independent.
+The market API has **no trade-volume data**, so we work out which items are "liquid": an
+item is in the default view only if it's a real **material / honing / fusion / cooking**
+item (we hide engraving recipes, consumables, baubles), it has a full recent price
+history, and its spot isn't a blown-out outlier vs fair (so one troll listing isn't
+mistaken for a deal). We don't label per-unit vs per-stack for every item, but the
+**deal %** is unit-independent.
 
 ## Data & refresh
 
-Prices are baked into `index.html` as a snapshot and **auto-refreshed every 6 hours** by
-a GitHub Action (`refresh_deals.py`, both regions). To refresh locally: `python3
+A GitHub Action bakes prices into `index.html` as a snapshot and **refreshes them every 6
+hours** (`refresh_deals.py`, both regions). To refresh locally: `python3
 refresh_deals.py` then reload.
 
 ## Deploy
@@ -45,4 +45,4 @@ git add -A && git commit -m "Lost Ark deal finder"
 gh repo create <user>/loa-deal-finder --public --source=. --push
 gh api -X POST repos/<user>/loa-deal-finder/pages -f source.branch=main -f source.path=/
 ```
-Data originates from the same community market feed loa-buddy uses.
+Data comes from the same community market feed loa-buddy uses.
